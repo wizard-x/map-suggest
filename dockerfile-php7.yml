@@ -1,0 +1,12 @@
+FROM php:7.4.22-alpine
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache php7-pear php7-dev postgresql-dev gcc musl-dev make && \
+    curl -sSL https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    pecl install xdebug && \
+    docker-php-ext-install pdo_pgsql && \
+    docker-php-ext-enable xdebug && \
+    echo xdebug.mode=coverage > /usr/local/etc/php/conf.d/xdebug.ini
+WORKDIR /app
+CMD ["php", "-S", "0.0.0.0:9000", "-t", "/app/public"]
+EXPOSE 9000

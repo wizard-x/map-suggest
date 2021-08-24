@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+
+  backend:
+    container_name: yar_backend
+    build:
+      context: .
+      dockerfile: ./dockerfile-php7.yml
+    ports:
+      - 9000:9000
+    volumes:
+      - ./maps:/app
+    depends_on:
+      - database
+
+  nginx:
+    container_name: yar_nginx
+    image: nginx
+    restart: always
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+
+  database:
+    container_name: yar_database
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
+  database_admin:
+    container_name: yar_database_admin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - 8080:80
+    depends_on:
+      - database
