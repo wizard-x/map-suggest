@@ -16,9 +16,19 @@ git clone https://github.com/wizard-x/map-suggest.git
 docker-compose up
 ```
 
+### Update packages
+```
+docker-compose exec backend composer install
+```
+
 ### Run unit tests
 ```
 docker-compose exec backend ./bin/phpunit
+```
+
+### View tests coverage
+```
+docker-compose exec backend ./bin/phpunit --coverage-text
 ```
 
 ### Shell
