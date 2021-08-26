@@ -21,8 +21,15 @@ docker-compose up
 docker-compose exec backend composer install
 ```
 
+### Database migrations
+```
+docker-compose exec backend /bin/sh -c "php ./bin/console doctrine:migrations:diff && php ./bin/console doctrine:migrations:migrate --no-interaction"
+```
+
 ### Run unit tests
 ```
+docker-compose exec backend  /bin/sh -c "php ./bin/console --env=test doctrine:database:create && php ./bin/console --env=test doctrine:schema:create"
+
 docker-compose exec backend ./bin/phpunit
 ```
 
@@ -39,7 +46,19 @@ docker-compose exec backend /bin/sh
 ### Access to ...
 ```
 web (vue)   - http://127.0.0.1:8000
+```
+```
 php (proxy) - http://127.0.0.1:9000
+```
+```
 pgadmin     - http://127.0.0.1:8080
+login: yar@yar.yar
+pass: yar
+```
+```
 psql        - 127.0.0.1:5432
+
+docker-compose exec database psql -Uyar
+
+PGPASSWORD=yar psql -Uyar -h127.0.0.1
 ```
