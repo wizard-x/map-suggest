@@ -2,17 +2,19 @@
 
 namespace App\Tools\DTO;
 
-class MapsDataDTO {
-    private $text;
-    private $data;
+use App\Tools\Interfaces\TransformToJSONInterface;
 
-    public function setText(string $text): self {
-        $this->text = $text;
+class MapsDataDTO implements TransformToJSONInterface {
+    private $request = '';
+    private $data = [];
+
+    public function setRequest(string $text): self {
+        $this->request = $text;
         return $this;
     }
 
-    public function getText(): string {
-        return $this->text;
+    public function getRequest(): string {
+        return $this->request;
     }
 
     public function setData(array $data): self {
@@ -24,10 +26,22 @@ class MapsDataDTO {
         return $this->data;
     }
 
+    public function isEmpty(): bool {
+        return count($this->getData()) == 0;
+    }
+
     public function toJSON(): string {
         return json_encode([
-            'text' => $this->getText(),
+            'request' => $this->getRequest(),
             'data' => $this->getData(),
         ]);
+    }
+
+    public function fromJSON(string $json): self {
+        $data = json_decode($json, true);
+        return $this
+            ->setRequest($data['request'])
+            ->setData($data['data'])
+        ;
     }
 }
