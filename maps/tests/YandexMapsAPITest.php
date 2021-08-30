@@ -10,6 +10,7 @@ use App\Tools\Yandex\API\YandexMapsAPI;
 use App\Tools\Yandex\API\MapsAPIResponseTransformer;
 use App\Tools\Yandex\Exceptions\YandexMapsAPIException;
 use App\Tools\DTO\MapsDataDTO;
+use App\Repository\Redis\MapPointRedisRepository;
 
 
 class YandexMapsAPITest extends KernelTestCase {
@@ -22,8 +23,10 @@ class YandexMapsAPITest extends KernelTestCase {
 
 
     public function prerequisites(): array {
+        $redis_service = self::$container->get('snc_redis.default');
+        $storage = new MapPointRedisRepository($redis_service);
         $transformer = new MapsAPIResponseTransformer();
-        $yandexMapsApi = new YandexMapsAPI(getenv('YANDEX_MAPS_API_TOKEN'), $transformer);
+        $yandexMapsApi = new YandexMapsAPI(getenv('YANDEX_MAPS_API_TOKEN'), $transformer, $storage);
         return ['maps' => $yandexMapsApi, 'transformer' => $transformer];
     }
 
@@ -31,11 +34,11 @@ class YandexMapsAPITest extends KernelTestCase {
     public function test_maps_data_dto(): void {
         $dto = new MapsDataDTO();
         $dto
-            ->setText('sample')
+            ->setRequest('sample')
             ->setData([1,2,3])
         ;
         $this->assertSame(
-            '{"text":"sample","data":[1,2,3]}',
+            '{"request":"sample","data":[1,2,3]}',
             $dto->toJSON()
         );
     }
