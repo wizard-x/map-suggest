@@ -30,7 +30,7 @@ class MapsAPIResponseTransformer implements TransformMapsAPIResponseInterface {
 
         $result = new MapsDataDTO();
         $result
-            ->setText($requestText)
+            ->setRequest($requestText)
             ->setData($data)
         ;
         return $result;

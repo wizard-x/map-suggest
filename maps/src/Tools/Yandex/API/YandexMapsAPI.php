@@ -6,6 +6,7 @@ use App\Tools\Interfaces\GeoSearchInterface;
 use App\Tools\Interfaces\TransformMapsAPIResponseInterface;
 use App\Tools\Yandex\Exceptions\YandexMapsAPIException;
 use App\Tools\Yandex\API\MapsAPIResponseTransformer;
+use App\Repository\Interfaces\DTOStorageInterface;
 use App\Tools\DTO\MapsDataDTO;
 
 class YandexMapsAPI implements GeoSearchInterface {
@@ -17,12 +18,14 @@ class YandexMapsAPI implements GeoSearchInterface {
 
     private $token = null;
     private $transformer = null;
+    private $storage = null;
 
 
-    public function __construct(string $token, TransformMapsAPIResponseInterface $transformer) {
+    public function __construct(string $token, TransformMapsAPIResponseInterface $transformer, DTOStorageInterface $storage) {
         $this
             ->setToken($token)
             ->setTransformer($transformer)
+            ->setStorage($storage)
         ;
     }
 
@@ -39,12 +42,23 @@ class YandexMapsAPI implements GeoSearchInterface {
     }
 
 
-    public function search($filter): MapsDataDTO {
-        $stringFilter = $this->parseFilter($filter);
-        $response = $this->callAPI($stringFilter);
-        return $this->transformResponse($response);
+    public function setStorage(DTOStorageInterface $storage): self {
+        $this->storage = $storage;
+        return $this;
     }
 
+    public function search($filter): MapsDataDTO {
+        $stringFilter = $this->parseFilter($filter);
+        $cachedResponse = $this->storage->retrieveAsDTOByKey($stringFilter);
+        if ($cachedResponse->isEmpty()) {
+            $yandexAPIResponse = $this->callAPI($stringFilter);
+            $dto = $this->transformResponse($yandexAPIResponse);
+            // TODO: вынести сохранение
+            $this->storage->saveFromDTO($dto);
+            return $dto;
+        }
+        return $cachedResponse;
+    }
 
     public function callAPI(string $filter): array {
         $url = sprintf(
@@ -56,7 +70,7 @@ class YandexMapsAPI implements GeoSearchInterface {
 
             6
         );
-        // thread safeless
+        // TODO: многопоточность не поддерживается
         $response = file_get_contents($url);
         return json_decode($response, true);
     }
