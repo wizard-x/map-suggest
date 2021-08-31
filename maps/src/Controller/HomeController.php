@@ -17,6 +17,6 @@ class HomeController extends AbstractController
      */
     public function index(Request $request): Response
     {
-        return $this->render('home/index.html.twig');
+        return $this->render('home/index.html.twig', ['yandex_api_key' => getenv('YANDEX_MAPS_API_TOKEN') ]);
     }
 }
