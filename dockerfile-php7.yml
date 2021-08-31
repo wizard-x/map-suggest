@@ -8,6 +8,7 @@ RUN apk update && \
     apk add --no-cache php7-fpm php7-iconv php7-ctype php7-pdo php7-session php7-dom php7-json && \
     apk add --no-cache php7-pdo_pgsql php7-tokenizer php7-pecl-xdebug php7-mbstring libxml2-dev && \
     apk add --no-cache php7-pecl-redis php7-openssl && \
+    apk add --no-cache nodejs npm && \
     sed -e 's/127\.0\.0\.1\:9000/0.0.0.0:9000/g' /etc/php7/php-fpm.d/www.conf >> /tmp/php-fpm.conf && \
     mv /tmp/php-fpm.conf /etc/php7/php-fpm.d/www.conf && \
     docker-php-ext-install pdo_pgsql && \
