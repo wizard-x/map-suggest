@@ -22,7 +22,7 @@
                 </v-autocomplete>
 
                 <v-container>
-                    <div id="map" min-idth="600px" min-height="400px"></div>
+                    <div id="map" min-width="600px" min-height="400px"></div>
                 </v-container>
             </v-container>
         </v-main>
@@ -86,6 +86,6 @@ export default {
 
 <style lang="scss" scoped>
 #map {
-    height: 100vh;
+    height: 70vh;
 }
 </style>
