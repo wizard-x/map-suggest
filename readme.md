@@ -19,6 +19,8 @@ docker-compose up
 ### Update packages
 ```
 docker-compose exec backend composer install
+docker-compose exec backend npm install
+docker-compose exec backend npm run build
 ```
 
 ### Database migrations
